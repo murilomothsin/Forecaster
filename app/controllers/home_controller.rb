@@ -30,11 +30,11 @@ class HomeController < ApplicationController
   private
 
   def weather_service
-    @weather_service ||= WeatherService.new
+    @weather_service ||= WeatherService.new(units: @search.units)
   end
 
   def permitted_params
-    @permitted_params ||= params.permit(:search_mode, :zip_code, :city, :country)
+    @permitted_params ||= params.permit(:search_mode, :zip_code, :city, :country, :units)
   end
 
   def search_params?

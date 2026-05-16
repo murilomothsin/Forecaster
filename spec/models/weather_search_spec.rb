@@ -11,6 +11,11 @@ RSpec.describe WeatherSearch do
       search = described_class.new
       expect(search.country).to eq("US")
     end
+
+    it "defaults units to metric" do
+      search = described_class.new
+      expect(search.units).to eq("metric")
+    end
   end
 
   describe "#city_search?" do
@@ -110,6 +115,21 @@ RSpec.describe WeatherSearch do
     it "skips validation when country is blank" do
       search = described_class.new(zip_code: "10001", country: "")
       expect(search).to be_valid
+    end
+  end
+
+  describe "units validation" do
+    %w[metric imperial standard].each do |unit|
+      it "is valid with #{unit} units" do
+        search = described_class.new(zip_code: "10001", units: unit)
+        expect(search).to be_valid
+      end
+    end
+
+    it "is invalid with an unsupported unit" do
+      search = described_class.new(zip_code: "10001", units: "invalid")
+      expect(search).not_to be_valid
+      expect(search.errors[:units]).to include("is not included in the list")
     end
   end
 end

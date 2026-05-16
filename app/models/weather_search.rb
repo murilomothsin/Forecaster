@@ -6,8 +6,10 @@ class WeatherSearch
   attribute :zip_code, :string
   attribute :city, :string
   attribute :country, :string, default: "US"
+  attribute :units, :string, default: "metric"
 
   validates :city, presence: true, length: { maximum: 100 }, if: :city_search?
+  validates :units, inclusion: { in: %w[metric imperial standard] }
   validates :zip_code, presence: true, format: { with: /\A[\w\s\-]{2,10}\z/ }, if: :zip_search?
   validate :country_must_be_valid, if: -> { country.present? }
 

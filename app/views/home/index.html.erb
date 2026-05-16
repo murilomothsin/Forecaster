@@ -35,12 +35,21 @@
       </div>
     </div>
 
-    <div class="mb-6">
-      <%= f.label :country, "Country", class: "block text-sm font-medium text-gray-700 mb-1" %>
-      <%= f.select :country,
-            ApplicationHelper::COUNTRY_OPTIONS,
-            { selected: params[:country] || "US" },
-            class: "w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" %>
+    <div class="flex gap-4 mb-6">
+      <div class="flex-1">
+        <%= f.label :country, "Country", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.select :country,
+              ApplicationHelper::COUNTRY_OPTIONS,
+              { selected: params[:country] || "US" },
+              class: "w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" %>
+      </div>
+      <div class="w-44">
+        <%= f.label :units, "Units", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.select :units,
+              ApplicationHelper::UNIT_OPTIONS,
+              { selected: params[:units] || "metric" },
+              class: "w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" %>
+      </div>
     </div>
 
     <%= f.submit "Get Forecast", class: "w-full bg-blue-600 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-700 cursor-pointer" %>
