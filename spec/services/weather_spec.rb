@@ -21,7 +21,7 @@ RSpec.describe Weather do
   describe '#current_weather' do
     let(:zip_code) { '12345' }
     let(:mock_client) { instance_double(OpenWeather::Client) }
-    let(:weather_data) { { 'main' => { 'temp' => 20 }, 'weather' => [{ 'description' => 'sunny' }] } }
+    let(:weather_data) { { 'main' => { 'temp' => 20 }, 'weather' => [ { 'description' => 'sunny' } ] } }
 
     before do
       allow(OpenWeather::Client).to receive(:new).and_return(mock_client)
@@ -31,7 +31,7 @@ RSpec.describe Weather do
     it 'returns a tuple with cache_hit and weather data' do
       weather = Weather.new
       cache_hit, data = weather.current_weather(zip_code)
-      
+
       expect(data).to eq(weather_data)
       expect(cache_hit).to be_a(TrueClass).or be_a(FalseClass)
     end
@@ -39,7 +39,7 @@ RSpec.describe Weather do
     it 'returns cache_hit false on first call' do
       weather = Weather.new
       cache_hit, data = weather.current_weather(zip_code)
-      
+
       expect(cache_hit).to be false
       expect(data).to eq(weather_data)
     end
@@ -54,7 +54,7 @@ RSpec.describe Weather do
     it 'uses correct cache key format' do
       weather = Weather.new
       cache_key = "weather/#{zip_code}/unit/metric"
-      
+
       expect(Rails.cache).to receive(:fetch).with(cache_key, expires_in: 30.minutes).and_call_original
 
       weather.current_weather(zip_code)
@@ -63,7 +63,7 @@ RSpec.describe Weather do
     it 'respects custom units in cache key' do
       weather = Weather.new(units: 'imperial')
       cache_key = "weather/#{zip_code}/unit/imperial"
-      
+
       expect(Rails.cache).to receive(:fetch).with(cache_key, expires_in: 30.minutes).and_call_original
 
       weather.current_weather(zip_code)
@@ -91,7 +91,7 @@ RSpec.describe Weather do
         weather = Weather.new
         weather.current_weather(zip_code)
         cache_hit, _ = weather.current_weather(zip_code)
-        
+
         expect(cache_hit).to be true
       end
 
@@ -105,11 +105,11 @@ RSpec.describe Weather do
 
       it 'returns different cache statuses for different zip codes' do
         weather = Weather.new
-        
+
         cache_hit1, _ = weather.current_weather('12345')
         cache_hit2, _ = weather.current_weather('67890')
         cache_hit3, _ = weather.current_weather('12345')
-        
+
         expect(cache_hit1).to be false
         expect(cache_hit2).to be false
         expect(cache_hit3).to be true
@@ -124,8 +124,8 @@ RSpec.describe Weather do
     let(:forecast_data) do
       {
         'list' => [
-          { 'main' => { 'temp' => 15 }, 'weather' => [{ 'description' => 'cloudy' }] },
-          { 'main' => { 'temp' => 18 }, 'weather' => [{ 'description' => 'sunny' }] }
+          { 'main' => { 'temp' => 15 }, 'weather' => [ { 'description' => 'cloudy' } ] },
+          { 'main' => { 'temp' => 18 }, 'weather' => [ { 'description' => 'sunny' } ] }
         ]
       }
     end

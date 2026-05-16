@@ -6,12 +6,12 @@ RSpec.describe DayForecast do
       {
         "dt" => Time.utc(2026, 5, 17, 9, 0),
         "main" => { "temp" => 16.86, "humidity" => 72 },
-        "weather" => [{ "icon_uri" => URI("http://openweathermap.org/img/wn/04n@2x.png"), "description" => "broken clouds" }]
+        "weather" => [ { "icon_uri" => URI("http://openweathermap.org/img/wn/04n@2x.png"), "description" => "broken clouds" } ]
       },
       {
         "dt" => Time.utc(2026, 5, 17, 12, 0),
         "main" => { "temp" => 16.26, "humidity" => 73 },
-        "weather" => [{ "icon_uri" => URI("http://openweathermap.org/img/wn/04n@2x.png"), "description" => "broken clouds" }]
+        "weather" => [ { "icon_uri" => URI("http://openweathermap.org/img/wn/04n@2x.png"), "description" => "broken clouds" } ]
       }
     ]
   end

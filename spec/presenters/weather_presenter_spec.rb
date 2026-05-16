@@ -6,7 +6,7 @@ RSpec.describe WeatherPresenter do
   let(:forecast) do
     OpenStruct.new(
       name: "New York",
-      weather: [OpenStruct.new(icon_uri: icon_uri, description: "clear sky")],
+      weather: [ OpenStruct.new(icon_uri: icon_uri, description: "clear sky") ],
       main: OpenStruct.new(temp: 21.84, feels_like: 20.52, humidity: 55)
     )
   end
@@ -105,7 +105,7 @@ RSpec.describe WeatherPresenter do
       presenter = described_class.new(forecast: forecast, extended_forecast: extended_forecast)
 
       dates = presenter.daily_forecasts.map(&:formatted_date)
-      expect(dates).to eq(["Saturday, May 16", "Sunday, May 17"])
+      expect(dates).to eq([ "Saturday, May 16", "Sunday, May 17" ])
     end
 
     it "assigns correct entries per day" do
