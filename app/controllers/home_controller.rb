@@ -3,9 +3,12 @@ class HomeController < ApplicationController
   def index
     return unless params[:zip_code].present?
 
-    @cache_hit, @forecast = @weather_service.current_weather(params[:zip_code])
+    cache_hit, forecast = @weather_service.current_weather(params[:zip_code])
 
-    @extended_forecast = @weather_service.complete_weather(@forecast['coord']['lat'], @forecast['coord']['lon']) if @forecast
+    if forecast
+      extended_forecast = @weather_service.complete_weather(forecast["coord"]["lat"], forecast["coord"]["lon"])
+      @weather = WeatherPresenter.new(forecast: forecast, extended_forecast: extended_forecast, cache_hit: cache_hit)
+    end
   rescue StandardError => e
     @error = e.message
   end

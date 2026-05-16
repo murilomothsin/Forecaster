@@ -1,0 +1,7 @@
+<div class="min-w-[7rem] max-w-[7rem] p-3 bg-white border border-gray-200 rounded-md shadow-sm text-center">
+  <p class="text-xs text-gray-500"><%= entry.time %></p>
+  <%= image_tag entry.icon_url, size: "40x40", alt: entry.condition, class: "mx-auto" %>
+  <p class="text-lg font-bold"><%= entry.temperature %>&deg;C</p>
+  <p class="text-xs text-gray-500 capitalize truncate"><%= entry.condition %></p>
+  <p class="text-xs text-gray-400 mt-1"><%= entry.humidity %>%</p>
+</div>

@@ -1,0 +1,27 @@
+<div class="mt-6 p-6 bg-white border border-gray-200 rounded-md shadow-sm relative">
+  <span class="absolute top-3 right-3 text-xs font-medium px-2.5 py-0.5 rounded-full <%= weather.cache_css_classes %>">
+    <%= weather.cache_label %>
+  </span>
+  <h2 class="text-xl font-semibold mb-4 flex items-center gap-1">
+    <%= weather.city_name %>
+    <%= image_tag weather.icon_url, size: "40x40", alt: weather.condition %>
+  </h2>
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <p class="text-sm text-gray-500">Temperature</p>
+      <p class="text-2xl font-bold"><%= weather.temperature %>&deg;C</p>
+    </div>
+    <div>
+      <p class="text-sm text-gray-500">Feels Like</p>
+      <p class="text-2xl font-bold"><%= weather.feels_like %>&deg;C</p>
+    </div>
+    <div>
+      <p class="text-sm text-gray-500">Humidity</p>
+      <p class="text-lg"><%= weather.humidity %>%</p>
+    </div>
+    <div>
+      <p class="text-sm text-gray-500">Condition</p>
+      <p class="text-lg capitalize"><%= weather.condition %></p>
+    </div>
+  </div>
+</div>
