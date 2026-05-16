@@ -1,4 +1,6 @@
 class WeatherPresenter
+  ICON_BASE_URL = "https://openweathermap.org/img/wn"
+
   attr_reader :daily_forecasts
 
   def initialize(forecast:, extended_forecast: nil, cache_hit: false)
@@ -8,27 +10,27 @@ class WeatherPresenter
   end
 
   def city_name
-    @forecast.name
+    @forecast["name"]
   end
 
   def icon_url
-    @forecast.weather.first.icon_uri.to_s
+    "#{ICON_BASE_URL}/#{@forecast["weather"].first["icon"]}@2x.png"
   end
 
   def condition
-    @forecast.weather.first.description
+    @forecast["weather"].first["description"]
   end
 
   def temperature
-    @forecast.main.temp.round
+    @forecast["main"]["temp"].round
   end
 
   def feels_like
-    @forecast.main.feels_like.round
+    @forecast["main"]["feels_like"].round
   end
 
   def humidity
-    @forecast.main.humidity
+    @forecast["main"]["humidity"]
   end
 
   def cache_hit?
@@ -53,7 +55,7 @@ class WeatherPresenter
     return [] unless extended_forecast
 
     extended_forecast["list"]
-      .group_by { |entry| entry["dt"].to_date }
+      .group_by { |entry| Time.at(entry["dt"]).utc.to_date }
       .map { |date, entries| DayForecast.new(date, entries) }
   end
 end

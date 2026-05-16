@@ -1,20 +1,32 @@
 class HomeController < ApplicationController
-  before_action :weather
   def index
-    return unless params[:zip_code].present?
+    return unless search_params?
 
-    cache_hit, forecast = @weather_service.current_weather(params[:zip_code])
-
-    if forecast
-      extended_forecast = @weather_service.complete_weather(forecast["coord"]["lat"], forecast["coord"]["lon"])
-      @weather = WeatherPresenter.new(forecast: forecast, extended_forecast: extended_forecast, cache_hit: cache_hit)
-    end
+    result = search_weather
+    @weather = WeatherPresenter.new(
+      forecast: result[:current],
+      extended_forecast: result[:forecast],
+      cache_hit: result[:cache_hit]
+    )
   rescue StandardError => e
     @error = e.message
   end
 
   private
-  def weather
-    @weather_service ||= Weather.new
+
+  def weather_service
+    @weather_service ||= WeatherService.new
+  end
+
+  def search_params?
+    params[:zip_code].present? || params[:city].present?
+  end
+
+  def search_weather
+    if params[:search_mode] == "city"
+      weather_service.search_by_city(params[:city], params[:country].presence)
+    else
+      weather_service.search_by_zip(params[:zip_code], params[:country] || "US")
+    end
   end
 end
