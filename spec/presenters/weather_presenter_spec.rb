@@ -35,8 +35,8 @@ RSpec.describe WeatherPresenter do
       expect(subject.city_name).to eq("New York")
     end
 
-    it "returns icon URL" do
-      expect(subject.icon_url).to eq("https://openweathermap.org/img/wn/01d@2x.png")
+    it "returns icon path" do
+      expect(subject.icon_path).to eq("meteocons/clear-day.svg")
     end
 
     it "returns condition description" do
