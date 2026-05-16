@@ -1,23 +1,21 @@
 require "rails_helper"
-require "ostruct"
 
 RSpec.describe WeatherPresenter do
-  let(:icon_uri) { URI::HTTP.build(host: "openweathermap.org", path: "/img/wn/01d@2x.png") }
   let(:forecast) do
-    OpenStruct.new(
-      name: "New York",
-      weather: [ OpenStruct.new(icon_uri: icon_uri, description: "clear sky") ],
-      main: OpenStruct.new(temp: 21.84, feels_like: 20.52, humidity: 55)
-    )
+    {
+      "name" => "New York",
+      "weather" => [{ "icon" => "01d", "description" => "clear sky" }],
+      "main" => { "temp" => 21.84, "feels_like" => 20.52, "humidity" => 55 }
+    }
   end
 
   let(:extended_forecast) do
     {
       "list" => [
-        build_entry(Time.utc(2026, 5, 16, 9, 0), 16.32, 87, "overcast clouds", "04n"),
-        build_entry(Time.utc(2026, 5, 16, 12, 0), 16.19, 84, "broken clouds", "04n"),
-        build_entry(Time.utc(2026, 5, 17, 9, 0), 18.41, 81, "scattered clouds", "04d"),
-        build_entry(Time.utc(2026, 5, 17, 12, 0), 20.65, 69, "scattered clouds", "04d")
+        build_entry(Time.utc(2026, 5, 16, 9, 0).to_i, 16.32, 87, "overcast clouds", "04n"),
+        build_entry(Time.utc(2026, 5, 16, 12, 0).to_i, 16.19, 84, "broken clouds", "04n"),
+        build_entry(Time.utc(2026, 5, 17, 9, 0).to_i, 18.41, 81, "scattered clouds", "04d"),
+        build_entry(Time.utc(2026, 5, 17, 12, 0).to_i, 20.65, 69, "scattered clouds", "04d")
       ]
     }
   end
@@ -26,12 +24,7 @@ RSpec.describe WeatherPresenter do
     {
       "dt" => dt,
       "main" => { "temp" => temp, "humidity" => humidity },
-      "weather" => [
-        {
-          "icon_uri" => URI::HTTP.build(host: "openweathermap.org", path: "/img/wn/#{icon}@2x.png"),
-          "description" => description
-        }
-      ]
+      "weather" => [{ "icon" => icon, "description" => description }]
     }
   end
 
@@ -42,8 +35,8 @@ RSpec.describe WeatherPresenter do
       expect(subject.city_name).to eq("New York")
     end
 
-    it "returns icon URL as string" do
-      expect(subject.icon_url).to eq("http://openweathermap.org/img/wn/01d@2x.png")
+    it "returns icon URL" do
+      expect(subject.icon_url).to eq("https://openweathermap.org/img/wn/01d@2x.png")
     end
 
     it "returns condition description" do
@@ -105,7 +98,7 @@ RSpec.describe WeatherPresenter do
       presenter = described_class.new(forecast: forecast, extended_forecast: extended_forecast)
 
       dates = presenter.daily_forecasts.map(&:formatted_date)
-      expect(dates).to eq([ "Saturday, May 16", "Sunday, May 17" ])
+      expect(dates).to eq(["Saturday, May 16", "Sunday, May 17"])
     end
 
     it "assigns correct entries per day" do

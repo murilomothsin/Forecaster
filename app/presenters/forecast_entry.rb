@@ -1,14 +1,16 @@
 class ForecastEntry
+  ICON_BASE_URL = "https://openweathermap.org/img/wn"
+
   def initialize(entry)
     @entry = entry
   end
 
   def time
-    @entry["dt"].strftime("%H:%M")
+    Time.at(@entry["dt"]).utc.strftime("%H:%M")
   end
 
   def icon_url
-    @entry["weather"].first["icon_uri"].to_s
+    "#{ICON_BASE_URL}/#{@entry["weather"].first["icon"]}@2x.png"
   end
 
   def condition

@@ -3,11 +3,11 @@ require "rails_helper"
 RSpec.describe ForecastEntry do
   let(:entry) do
     {
-      "dt" => Time.utc(2026, 5, 16, 18, 0),
+      "dt" => Time.utc(2026, 5, 16, 18, 0).to_i,
       "main" => { "temp" => 19.4, "humidity" => 54 },
       "weather" => [
         {
-          "icon_uri" => URI("http://openweathermap.org/img/wn/02d@2x.png"),
+          "icon" => "02d",
           "description" => "few clouds"
         }
       ]
@@ -21,7 +21,7 @@ RSpec.describe ForecastEntry do
   end
 
   it "returns icon URL as string" do
-    expect(subject.icon_url).to eq("http://openweathermap.org/img/wn/02d@2x.png")
+    expect(subject.icon_url).to eq("https://openweathermap.org/img/wn/02d@2x.png")
   end
 
   it "returns condition description" do
