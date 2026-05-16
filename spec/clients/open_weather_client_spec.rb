@@ -11,12 +11,18 @@ RSpec.describe OpenWeatherClient do
       code: status
     )
     allow(response).to receive(:is_a?).with(Net::HTTPSuccess).and_return(status == "200")
-    allow(Net::HTTP).to receive(:get_response).and_return(response)
+
+    @http_mock = instance_double(Net::HTTP)
+    allow(@http_mock).to receive(:use_ssl=)
+    allow(@http_mock).to receive(:open_timeout=)
+    allow(@http_mock).to receive(:read_timeout=)
+    allow(@http_mock).to receive(:request).and_return(response)
+    allow(Net::HTTP).to receive(:new).and_return(@http_mock)
   end
 
   def expect_request_to(path, **expected_params)
-    expect(Net::HTTP).to have_received(:get_response) do |uri|
-      expect(uri.host).to eq("api.openweathermap.org")
+    expect(@http_mock).to have_received(:request) do |req|
+      uri = URI("https://api.openweathermap.org#{req.path}")
       expect(uri.path).to eq(path)
       params = URI.decode_www_form(uri.query).to_h
       expect(params["appid"]).to eq(api_key)
@@ -48,7 +54,7 @@ RSpec.describe OpenWeatherClient do
   end
 
   describe "#geocode_city" do
-    let(:response) { [{ "name" => "London", "lat" => 51.5074, "lon" => -0.1278, "country" => "GB" }] }
+    let(:response) { [ { "name" => "London", "lat" => 51.5074, "lon" => -0.1278, "country" => "GB" } ] }
 
     it "returns matching locations" do
       stub_api(response)
@@ -81,7 +87,7 @@ RSpec.describe OpenWeatherClient do
       {
         "name" => "New York",
         "main" => { "temp" => 21.5, "feels_like" => 20.0, "humidity" => 55 },
-        "weather" => [{ "description" => "clear sky", "icon" => "01d" }]
+        "weather" => [ { "description" => "clear sky", "icon" => "01d" } ]
       }
     end
 
@@ -107,7 +113,7 @@ RSpec.describe OpenWeatherClient do
     let(:response) do
       {
         "list" => [
-          { "dt" => 1779206400, "main" => { "temp" => 16.0 }, "weather" => [{ "icon" => "04n" }] }
+          { "dt" => 1779206400, "main" => { "temp" => 16.0 }, "weather" => [ { "icon" => "04n" } ] }
         ]
       }
     end

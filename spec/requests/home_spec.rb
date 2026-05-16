@@ -3,12 +3,12 @@ require "rails_helper"
 RSpec.describe "Home", type: :request do
   let(:client) { instance_double(OpenWeatherClient) }
   let(:geo_zip_response) { { "lat" => 40.7484, "lon" => -73.9967, "name" => "New York" } }
-  let(:geo_city_response) { [{ "lat" => 51.5074, "lon" => -0.1278, "name" => "London" }] }
+  let(:geo_city_response) { [ { "lat" => 51.5074, "lon" => -0.1278, "name" => "London" } ] }
   let(:current_response) do
     {
       "name" => "New York",
       "main" => { "temp" => 21.5, "feels_like" => 20.0, "humidity" => 55 },
-      "weather" => [{ "description" => "clear sky", "icon" => "01d" }]
+      "weather" => [ { "description" => "clear sky", "icon" => "01d" } ]
     }
   end
   let(:forecast_response) do
@@ -17,7 +17,7 @@ RSpec.describe "Home", type: :request do
         {
           "dt" => Time.utc(2026, 5, 16, 9, 0).to_i,
           "main" => { "temp" => 16.0, "humidity" => 80 },
-          "weather" => [{ "icon" => "04n", "description" => "overcast clouds" }]
+          "weather" => [ { "icon" => "04n", "description" => "overcast clouds" } ]
         }
       ]
     }

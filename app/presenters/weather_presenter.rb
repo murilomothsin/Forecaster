@@ -14,23 +14,23 @@ class WeatherPresenter
   end
 
   def icon_url
-    "#{ICON_BASE_URL}/#{@forecast["weather"].first["icon"]}@2x.png"
+    "#{ICON_BASE_URL}/#{@forecast.dig("weather", 0, "icon")}@2x.png"
   end
 
   def condition
-    @forecast["weather"].first["description"]
+    @forecast.dig("weather", 0, "description")
   end
 
   def temperature
-    @forecast["main"]["temp"].round
+    @forecast.dig("main", "temp")&.round
   end
 
   def feels_like
-    @forecast["main"]["feels_like"].round
+    @forecast.dig("main", "feels_like")&.round
   end
 
   def humidity
-    @forecast["main"]["humidity"]
+    @forecast.dig("main", "humidity")
   end
 
   def cache_hit?

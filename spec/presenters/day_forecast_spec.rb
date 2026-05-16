@@ -6,12 +6,12 @@ RSpec.describe DayForecast do
       {
         "dt" => Time.utc(2026, 5, 17, 9, 0).to_i,
         "main" => { "temp" => 16.86, "humidity" => 72 },
-        "weather" => [{ "icon" => "04n", "description" => "broken clouds" }]
+        "weather" => [ { "icon" => "04n", "description" => "broken clouds" } ]
       },
       {
         "dt" => Time.utc(2026, 5, 17, 12, 0).to_i,
         "main" => { "temp" => 16.26, "humidity" => 73 },
-        "weather" => [{ "icon" => "04n", "description" => "broken clouds" }]
+        "weather" => [ { "icon" => "04n", "description" => "broken clouds" } ]
       }
     ]
   end

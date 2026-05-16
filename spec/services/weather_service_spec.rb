@@ -3,18 +3,18 @@ require "rails_helper"
 RSpec.describe WeatherService do
   let(:client) { instance_double(OpenWeatherClient) }
   let(:geo_response) { { "lat" => 40.7484, "lon" => -73.9967, "name" => "New York" } }
-  let(:city_geo_response) { [{ "lat" => 51.5074, "lon" => -0.1278, "name" => "London" }] }
+  let(:city_geo_response) { [ { "lat" => 51.5074, "lon" => -0.1278, "name" => "London" } ] }
   let(:current_response) do
     {
       "name" => "New York",
       "main" => { "temp" => 21.5, "feels_like" => 20.0, "humidity" => 55 },
-      "weather" => [{ "description" => "clear sky", "icon" => "01d" }]
+      "weather" => [ { "description" => "clear sky", "icon" => "01d" } ]
     }
   end
   let(:forecast_response) do
     {
       "list" => [
-        { "dt" => 1779206400, "main" => { "temp" => 16.0 }, "weather" => [{ "icon" => "04n" }] }
+        { "dt" => 1779206400, "main" => { "temp" => 16.0 }, "weather" => [ { "icon" => "04n" } ] }
       ]
     }
   end
@@ -77,6 +77,7 @@ RSpec.describe WeatherService do
 
       it "returns cache_hit true on subsequent calls" do
         weather = WeatherService.new
+        weather.search_by_zip("10001")
         result = weather.search_by_zip("10001")
         expect(result[:cache_hit]).to be true
       end
@@ -103,9 +104,9 @@ RSpec.describe WeatherService do
       expect(result[:forecast]).to eq(forecast_response)
     end
 
-    it "works without country code" do
+    it "defaults country to US" do
       WeatherService.new.search_by_city("London")
-      expect(client).to have_received(:geocode_city).with("London", nil)
+      expect(client).to have_received(:geocode_city).with("London", "US")
     end
 
     it "raises when no city is found" do

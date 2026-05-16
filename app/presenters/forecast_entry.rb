@@ -1,6 +1,4 @@
 class ForecastEntry
-  ICON_BASE_URL = "https://openweathermap.org/img/wn"
-
   def initialize(entry)
     @entry = entry
   end
@@ -10,18 +8,18 @@ class ForecastEntry
   end
 
   def icon_url
-    "#{ICON_BASE_URL}/#{@entry["weather"].first["icon"]}@2x.png"
+    "#{WeatherPresenter::ICON_BASE_URL}/#{@entry.dig("weather", 0, "icon")}@2x.png"
   end
 
   def condition
-    @entry["weather"].first["description"]
+    @entry.dig("weather", 0, "description")
   end
 
   def temperature
-    @entry["main"]["temp"].round
+    @entry.dig("main", "temp")&.round
   end
 
   def humidity
-    @entry["main"]["humidity"]
+    @entry.dig("main", "humidity")
   end
 end

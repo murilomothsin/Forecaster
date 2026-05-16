@@ -38,7 +38,7 @@
     <div class="mb-6">
       <%= f.label :country, "Country", class: "block text-sm font-medium text-gray-700 mb-1" %>
       <%= f.select :country,
-            ISO3166::Country.pluck(:iso_short_name, :alpha2).sort_by(&:first),
+            ApplicationHelper::COUNTRY_OPTIONS,
             { selected: params[:country] || "US" },
             class: "w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" %>
     </div>
