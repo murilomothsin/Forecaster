@@ -1,0 +1,58 @@
+<div class="w-full max-w-lg mx-auto">
+  <h1 class="font-bold text-4xl mb-8">Weather Forecast</h1>
+
+  <%= form_with url: root_path, method: :get, data: { turbo_frame: "forecast_result" } do |f| %>
+    <div class="mb-4">
+      <%= f.label :zip_code, "Zip Code", class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= f.text_field :zip_code, value: params[:zip_code], required: true, placeholder: "e.g. 10001",
+            class: "w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" %>
+    </div>
+
+    <div class="mb-4">
+      <%= f.label :country, "Country", class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= f.select :country, [["United States", "US"]], {}, disabled: true,
+            class: "w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm bg-gray-100 text-gray-500" %>
+    </div>
+
+    <div class="mb-6">
+      <%= f.label :address, "Address", class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= f.text_field :address, value: params[:address], placeholder: "Street address (optional)",
+            class: "w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" %>
+    </div>
+
+    <%= f.submit "Get Forecast", class: "w-full bg-blue-600 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-700 cursor-pointer" %>
+  <% end %>
+
+  <%= turbo_frame_tag "forecast_result" do %>
+    <% if @error %>
+      <div class="mt-6 p-4 bg-red-50 border border-red-200 rounded-md text-red-700">
+        <p><%= @error %></p>
+      </div>
+    <% elsif @forecast %>
+      <div class="mt-6 p-6 bg-white border border-gray-200 rounded-md shadow-sm relative">
+        <span class="absolute top-3 right-3 text-xs font-medium px-2.5 py-0.5 rounded-full <%= @cache_hit ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800' %>">
+          <%= @cache_hit ? "Cached" : "Live" %>
+        </span>
+        <h2 class="text-xl font-semibold mb-4"><%= @forecast.name %></h2>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <p class="text-sm text-gray-500">Temperature</p>
+            <p class="text-2xl font-bold"><%= @forecast.main.temp %>&deg;C</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Feels Like</p>
+            <p class="text-2xl font-bold"><%= @forecast.main.feels_like %>&deg;C</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Humidity</p>
+            <p class="text-lg"><%= @forecast.main.humidity %>%</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Condition</p>
+            <p class="text-lg capitalize"><%= @forecast.weather.first.description %></p>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>

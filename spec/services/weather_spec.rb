@@ -19,53 +19,101 @@ RSpec.describe Weather do
   end
 
   describe '#current_weather' do
-    let(:weather) { Weather.new }
     let(:zip_code) { '12345' }
     let(:mock_client) { instance_double(OpenWeather::Client) }
     let(:weather_data) { { 'main' => { 'temp' => 20 }, 'weather' => [{ 'description' => 'sunny' }] } }
 
     before do
       allow(OpenWeather::Client).to receive(:new).and_return(mock_client)
-      @weather = Weather.new
+      allow(mock_client).to receive(:current_zip).and_return(weather_data)
     end
 
-    it 'returns weather data for a zip code' do
-      allow(mock_client).to receive(:current_zip).with(zip_code, 'US', { units: 'metric' }).and_return(weather_data)
+    it 'returns a tuple with cache_hit and weather data' do
+      weather = Weather.new
+      cache_hit, data = weather.current_weather(zip_code)
+      
+      expect(data).to eq(weather_data)
+      expect(cache_hit).to be_a(TrueClass).or be_a(FalseClass)
+    end
 
-      result = @weather.current_weather(zip_code)
-      expect(result).to eq(weather_data)
+    it 'returns cache_hit false on first call' do
+      weather = Weather.new
+      cache_hit, data = weather.current_weather(zip_code)
+      
+      expect(cache_hit).to be false
+      expect(data).to eq(weather_data)
     end
 
     it 'calls the client with correct parameters' do
+      weather = Weather.new
       expect(mock_client).to receive(:current_zip).with(zip_code, 'US', { units: 'metric' }).and_return(weather_data)
 
-      @weather.current_weather(zip_code)
-    end
-
-    it 'caches the result' do
-      allow(mock_client).to receive(:current_zip).with(zip_code, 'US', { units: 'metric' }).and_return(weather_data)
-      
-      # Verify that fetch is called with correct cache key and expiration
-      expect(Rails.cache).to receive(:fetch).with("weather/#{zip_code}/unit/metric", expires_in: 30.minutes).and_call_original
-      
-      @weather.current_weather(zip_code)
+      weather.current_weather(zip_code)
     end
 
     it 'uses correct cache key format' do
+      weather = Weather.new
       cache_key = "weather/#{zip_code}/unit/metric"
-      expect(Rails.cache).to receive(:fetch).with(cache_key, expires_in: 30.minutes)
+      
+      expect(Rails.cache).to receive(:fetch).with(cache_key, expires_in: 30.minutes).and_call_original
 
-      @weather.current_weather(zip_code)
+      weather.current_weather(zip_code)
     end
 
     it 'respects custom units in cache key' do
-      weather_with_imperial = Weather.new(units: 'imperial')
-      allow(OpenWeather::Client).to receive(:new).and_return(mock_client)
-
+      weather = Weather.new(units: 'imperial')
       cache_key = "weather/#{zip_code}/unit/imperial"
-      expect(Rails.cache).to receive(:fetch).with(cache_key, expires_in: 30.minutes)
+      
+      expect(Rails.cache).to receive(:fetch).with(cache_key, expires_in: 30.minutes).and_call_original
 
-      weather_with_imperial.current_weather(zip_code)
+      weather.current_weather(zip_code)
+    end
+
+    context 'with cache enabled' do
+      before do
+        allow(Rails.cache).to receive(:fetch) do |key, options, &block|
+          @test_cache ||= {}
+          if @test_cache.key?(key)
+            @test_cache[key]
+          else
+            @test_cache[key] = block.call
+          end
+        end
+      end
+
+      it 'returns cache_hit false on first call' do
+        weather = Weather.new
+        cache_hit, _ = weather.current_weather(zip_code)
+        expect(cache_hit).to be false
+      end
+
+      it 'returns cache_hit true on subsequent calls' do
+        weather = Weather.new
+        weather.current_weather(zip_code)
+        cache_hit, _ = weather.current_weather(zip_code)
+        
+        expect(cache_hit).to be true
+      end
+
+      it 'calls the client only on first request' do
+        weather = Weather.new
+        expect(mock_client).to receive(:current_zip).once.with(zip_code, 'US', { units: 'metric' }).and_return(weather_data)
+
+        weather.current_weather(zip_code)
+        weather.current_weather(zip_code)
+      end
+
+      it 'returns different cache statuses for different zip codes' do
+        weather = Weather.new
+        
+        cache_hit1, _ = weather.current_weather('12345')
+        cache_hit2, _ = weather.current_weather('67890')
+        cache_hit3, _ = weather.current_weather('12345')
+        
+        expect(cache_hit1).to be false
+        expect(cache_hit2).to be false
+        expect(cache_hit3).to be true
+      end
     end
   end
 end
