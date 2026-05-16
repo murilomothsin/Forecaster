@@ -1,6 +1,18 @@
 class HomeController < ApplicationController
+  rate_limit to: 10, within: 1.minute, only: :index, if: :search_params?,
+             with: -> {
+               @error = "Too many requests. Please wait a moment before trying again."
+               render :index, status: :too_many_requests
+             }
+
   def index
     return unless search_params?
+
+    @search = WeatherSearch.new(permitted_params.to_h)
+    unless @search.valid?
+      @error = @search.errors.full_messages.to_sentence
+      return
+    end
 
     result = search_weather
     @weather = WeatherPresenter.new(
@@ -8,8 +20,11 @@ class HomeController < ApplicationController
       extended_forecast: result[:forecast],
       cache_hit: result[:cache_hit]
     )
-  rescue StandardError => e
+  rescue OpenWeatherClient::ApiError => e
     @error = e.message
+  rescue StandardError => e
+    Rails.logger.error("Weather search failed: #{e.class} - #{e.message}\n#{e.backtrace&.first(5)&.join("\n")}")
+    @error = "Something went wrong. Please try again later."
   end
 
   private
@@ -18,15 +33,19 @@ class HomeController < ApplicationController
     @weather_service ||= WeatherService.new
   end
 
+  def permitted_params
+    @permitted_params ||= params.permit(:search_mode, :zip_code, :city, :country)
+  end
+
   def search_params?
     params[:zip_code].present? || params[:city].present?
   end
 
   def search_weather
-    if params[:search_mode] == "city"
-      weather_service.search_by_city(params[:city], params[:country].presence)
+    if @search.city_search?
+      weather_service.search_by_city(@search.city, @search.country)
     else
-      weather_service.search_by_zip(params[:zip_code], params[:country] || "US")
+      weather_service.search_by_zip(@search.zip_code, @search.country)
     end
   end
 end
