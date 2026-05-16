@@ -11,7 +11,7 @@ class WeatherService
     fetch_weather(geo["lat"], geo["lon"])
   end
 
-  def search_by_city(city, country_code = nil)
+  def search_by_city(city, country_code = "US")
     results = Rails.cache.fetch("weather/geo/#{city}/#{country_code}", expires_in: 6.hours) do
       @client.geocode_city(city, country_code)
     end

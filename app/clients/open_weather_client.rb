@@ -24,7 +24,7 @@ class OpenWeatherClient
   end
 
   def geocode_city(city, country_code = nil, limit: 5)
-    query = [city, country_code].compact.join(",")
+    query = [ city, country_code ].compact.join(",")
     get("/geo/1.0/direct", q: query, limit: limit)
   end
 
