@@ -14,6 +14,8 @@ class OpenWeatherClient
   end
 
   def initialize(api_key: Rails.application.credentials.dig(:open_weather, :api_key))
+    raise ApiError, "OpenWeather API key is not configured. Run: bin/rails credentials:edit" if api_key.blank?
+
     @api_key = api_key
   end
 

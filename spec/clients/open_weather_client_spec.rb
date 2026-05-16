@@ -122,6 +122,18 @@ RSpec.describe OpenWeatherClient do
     end
   end
 
+  describe "initialization" do
+    it "raises when API key is missing" do
+      expect { described_class.new(api_key: nil) }
+        .to raise_error(OpenWeatherClient::ApiError, /API key is not configured/)
+    end
+
+    it "raises when API key is blank" do
+      expect { described_class.new(api_key: "") }
+        .to raise_error(OpenWeatherClient::ApiError, /API key is not configured/)
+    end
+  end
+
   describe "error handling" do
     it "raises ApiError on non-success response" do
       stub_api({ "cod" => 401, "message" => "Invalid API key" }, status: "401")
