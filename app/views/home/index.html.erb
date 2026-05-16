@@ -33,15 +33,18 @@
         <span class="absolute top-3 right-3 text-xs font-medium px-2.5 py-0.5 rounded-full <%= @cache_hit ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800' %>">
           <%= @cache_hit ? "Cached" : "Live" %>
         </span>
-        <h2 class="text-xl font-semibold mb-4"><%= @forecast.name %></h2>
+        <h2 class="text-xl font-semibold mb-4 flex items-center gap-1">
+          <%= @forecast.name %>
+          <%= image_tag @forecast.weather.first.icon_uri.to_s, size: "40x40", alt: @forecast.weather.first.description %>
+        </h2>
         <div class="grid grid-cols-2 gap-4">
           <div>
             <p class="text-sm text-gray-500">Temperature</p>
-            <p class="text-2xl font-bold"><%= @forecast.main.temp %>&deg;C</p>
+            <p class="text-2xl font-bold"><%= @forecast.main.temp.round %>&deg;C</p>
           </div>
           <div>
             <p class="text-sm text-gray-500">Feels Like</p>
-            <p class="text-2xl font-bold"><%= @forecast.main.feels_like %>&deg;C</p>
+            <p class="text-2xl font-bold"><%= @forecast.main.feels_like.round %>&deg;C</p>
           </div>
           <div>
             <p class="text-sm text-gray-500">Humidity</p>
@@ -53,6 +56,30 @@
           </div>
         </div>
       </div>
+
+      <% if @extended_forecast %>
+        <div class="mt-6">
+          <h3 class="text-lg font-semibold mb-3">5-Day Forecast</h3>
+          <% @extended_forecast['list'].group_by { |entry| entry['dt'].to_date }.each do |date, entries| %>
+            <div class="mb-4">
+              <p class="text-sm font-medium text-gray-600 mb-2"><%= date.strftime("%A, %b %d") %></p>
+              <div class="overflow-x-auto pb-2 -mx-5 px-5">
+                <div class="flex gap-3 w-max ">
+                  <% entries.each do |entry| %>
+                    <div class="min-w-[7rem] max-w-[7rem] p-3 bg-white border border-gray-200 rounded-md shadow-sm text-center">
+                      <p class="text-xs text-gray-500"><%= entry['dt'].strftime("%H:%M") %></p>
+                      <%= image_tag entry['weather'].first['icon_uri'].to_s, size: "40x40", alt: entry['weather'].first['description'], class: "mx-auto" %>
+                      <p class="text-lg font-bold"><%= entry['main']['temp'].round %>&deg;C</p>
+                      <p class="text-xs text-gray-500 capitalize truncate"><%= entry['weather'].first['description'] %></p>
+                      <p class="text-xs text-gray-400 mt-1"><%= entry['main']['humidity'] %>%</p>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
     <% end %>
   <% end %>
 </div>

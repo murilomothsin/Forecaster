@@ -14,4 +14,10 @@ class Weather
 
     [cache_hit, response]
   end
+
+  def complete_weather(lat, lon)
+    Rails.cache.fetch("weather/lat/#{lat}/lon/#{lon}/unit/#{@options[:units]}", expires_in: 30.minutes) do
+      @client.five_day_forecast(lat: lat, lon: lon, **@options)
+    end
+  end
 end
