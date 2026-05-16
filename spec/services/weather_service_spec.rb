@@ -56,11 +56,6 @@ RSpec.describe WeatherService do
       expect(client).to have_received(:geocode_zip).with("10001", "US")
     end
 
-    it "returns cache_hit false on first call" do
-      result = WeatherService.new.search_by_zip("10001")
-      expect(result[:cache_hit]).to be false
-    end
-
     it "passes custom units to the client" do
       WeatherService.new(units: "imperial").search_by_zip("10001")
       expect(client).to have_received(:current_weather).with(lat: 40.7484, lon: -73.9967, units: "imperial")
@@ -68,20 +63,20 @@ RSpec.describe WeatherService do
     end
 
     context "with cache" do
+      let(:memory_store) { ActiveSupport::Cache.lookup_store(:memory_store) }
+
       before do
-        allow(Rails.cache).to receive(:fetch) do |key, opts, &block|
-          @cache ||= {}
-          if @cache.key?(key)
-            @cache[key]
-          else
-            @cache[key] = block.call
-          end
-        end
+        allow(Rails).to receive(:cache).and_return(memory_store)
+        Rails.cache.clear
+      end
+
+      it "returns cache_hit false on first call" do
+        result = WeatherService.new.search_by_zip("10001")
+        expect(result[:cache_hit]).to be false
       end
 
       it "returns cache_hit true on subsequent calls" do
         weather = WeatherService.new
-        weather.search_by_zip("10001")
         result = weather.search_by_zip("10001")
         expect(result[:cache_hit]).to be true
       end

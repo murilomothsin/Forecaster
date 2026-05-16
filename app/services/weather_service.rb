@@ -5,12 +5,16 @@ class WeatherService
   end
 
   def search_by_zip(zip_code, country_code = "US")
-    geo = @client.geocode_zip(zip_code, country_code)
+    geo = Rails.cache.fetch("weather/geo/#{zip_code}/#{country_code}", expires_in: 6.hours) do
+      @client.geocode_zip(zip_code, country_code)
+    end
     fetch_weather(geo["lat"], geo["lon"])
   end
 
   def search_by_city(city, country_code = nil)
-    results = @client.geocode_city(city, country_code)
+    results = Rails.cache.fetch("weather/geo/#{city}/#{country_code}", expires_in: 6.hours) do
+      @client.geocode_city(city, country_code)
+    end
     raise OpenWeatherClient::ApiError.new("City not found", code: 404) if results.empty?
 
     geo = results.first
@@ -20,10 +24,9 @@ class WeatherService
   private
 
   def fetch_weather(lat, lon)
-    cache_hit = true
+    cache_hit = Rails.cache.exist?("weather/current/#{lat}/#{lon}/#{@units}") || Rails.cache.exist?("weather/forecast/#{lat}/#{lon}/#{@units}")
 
     current = Rails.cache.fetch("weather/current/#{lat}/#{lon}/#{@units}", expires_in: 30.minutes) do
-      cache_hit = false
       @client.current_weather(lat: lat, lon: lon, units: @units)
     end
 
