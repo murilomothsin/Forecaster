@@ -7,8 +7,8 @@ class ForecastEntry
     Time.at(@entry["dt"]).utc.strftime("%H:%M")
   end
 
-  def icon_url
-    "#{WeatherPresenter::ICON_BASE_URL}/#{@entry.dig("weather", 0, "icon")}@2x.png"
+  def icon_path
+    WeatherIcon.path_for(@entry.dig("weather", 0, "icon"))
   end
 
   def condition

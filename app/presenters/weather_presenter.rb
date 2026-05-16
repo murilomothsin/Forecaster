@@ -1,6 +1,4 @@
 class WeatherPresenter
-  ICON_BASE_URL = "https://openweathermap.org/img/wn"
-
   attr_reader :daily_forecasts
 
   def initialize(forecast:, extended_forecast: nil, cache_hit: false)
@@ -13,8 +11,8 @@ class WeatherPresenter
     @forecast["name"]
   end
 
-  def icon_url
-    "#{ICON_BASE_URL}/#{@forecast.dig("weather", 0, "icon")}@2x.png"
+  def icon_path
+    WeatherIcon.path_for(@forecast.dig("weather", 0, "icon"))
   end
 
   def condition

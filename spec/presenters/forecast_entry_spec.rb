@@ -20,8 +20,8 @@ RSpec.describe ForecastEntry do
     expect(subject.time).to eq("18:00")
   end
 
-  it "returns icon URL as string" do
-    expect(subject.icon_url).to eq("https://openweathermap.org/img/wn/02d@2x.png")
+  it "returns icon path" do
+    expect(subject.icon_path).to eq("meteocons/mostly-clear-day.svg")
   end
 
   it "returns condition description" do
