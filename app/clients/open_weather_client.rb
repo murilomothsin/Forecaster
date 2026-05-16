@@ -42,7 +42,12 @@ class OpenWeatherClient
     uri = URI("#{BASE_URI}#{path}")
     uri.query = URI.encode_www_form(params.merge(appid: @api_key))
 
-    response = Net::HTTP.get_response(uri)
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = (uri.scheme == "https")
+    http.open_timeout = 5
+    http.read_timeout = 5
+
+    response = http.request(Net::HTTP::Get.new(uri))
     body = JSON.parse(response.body)
 
     unless response.is_a?(Net::HTTPSuccess)
