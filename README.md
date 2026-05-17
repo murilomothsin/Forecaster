@@ -12,7 +12,7 @@ A weather forecast app built with Rails 8.1 and the OpenWeather API. Search by z
 
 ```bash
 git clone https://github.com/murilomothsin/Forecaster
-cd forecaster
+cd Forecaster
 bundle install
 bin/rails db:setup
 ```
@@ -28,7 +28,7 @@ The app uses Rails credentials to store the API key.
 > * If you don't have the master.key for the project run `rm config/credentials.yml.enc` to remove the old credentials, rails will create a new `config/master.key` and a `config/credentials.yml.enc` one when you edit the file *
 
 ```bash
-bin/rails credentials:edit
+EDITOR="vim" bin/rails credentials:edit
 ```
 
 3. Add your key under the `open_weather` namespace:
@@ -38,7 +38,7 @@ open_weather:
   api_key: your_api_key_here
 ```
 
-4. Save and close the editor. The encrypted `config/credentials.yml.enc` will be updated automatically.
+4. Save and close the editor (for vim editor, press ESC and then `:wq`). The encrypted `config/credentials.yml.enc` will be updated automatically.
 
 > **Note:** The `config/master.key` file is required to decrypt credentials. It is git-ignored by default. Share it securely with other developers — never commit it.
 
